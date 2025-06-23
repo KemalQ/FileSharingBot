@@ -33,3 +33,5 @@ build/
 .vscode/
 
 application.properties
+
+src/main/resources/migrations/createUserTable/create_table_users.xml
