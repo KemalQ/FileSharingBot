@@ -33,10 +33,10 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public String registerUser(AppUser appUser) {
         if (appUser.getIsActive()){
-            return "Вы уже зарегистрированы!";
+            return "You are already registered!";
         } else if (appUser.getEmail() != null){
-            return "Вам на почту было отправлено письмо. "
-                    + "Перейдите по ссылке в письме для пожтверждения регистрации.";
+            return "An email has been sent to you. "
+                    + "Follow the link in the email to confirm your registration.";
         }
         appUser.setState(WAIT_FOR_EMAIL_STATE);
         appUserDAO.save(appUser);
@@ -46,36 +46,35 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public String setEmail(AppUser appUser, String email) {
         try {
-            InternetAddress emailAddress = new InternetAddress(email);//созд InternetAddress
-            emailAddress.validate();//проверка на соответствие эл адр правильному формату
+            InternetAddress emailAddress = new InternetAddress(email);
+            emailAddress.validate();
         } catch (AddressException e) {
-            return "Введите пожалуйста корретный email. Для отмены команды введите /cancel";
+            return "Please enter a valid email. To cancel the command, enter /cancel";
         }
-        var optional = appUserDAO.findByEmail(email);//если нет optional=null
-        if (optional.isEmpty()) {//если польз. не найден по эл почте в бд
-            appUser.setEmail(email);//TODO установка эл почты  setEmail здесь это setter из AppUser
+        var optional = appUserDAO.findByEmail(email);//if not optional=null
+        if (optional.isEmpty()) {
+            appUser.setEmail(email);//TODO set email setEmail here is setter from AppUser
             appUser.setState(BASIC_STATE);
             appUser = appUserDAO.save(appUser);
 
-            var cryptoUserId = cryptoTool.hashOf(appUser.getId());//TODO ошибка возможно изза возвр знач из хеша
+            var cryptoUserId = cryptoTool.hashOf(appUser.getId());//TODO possibly an error due to returning a value from a hash
             var response = sendRequestToMailService(cryptoUserId, email);
             if (response.getStatusCode() != HttpStatus.OK) {
-                var msg = String.format("Отправка эл. письма на почту %s не удалась.", email);
+                var msg = String.format("Sending email to %s failed.", email);
                 log.error(msg);
                 appUser.setEmail(null);
                 appUserDAO.save(appUser);
                 return msg;
             }
-            return "Вам на почту было отправлено письмо."
-                    + " Перейдите по ссылке в письме для подстверждения регистрации";
+            return "An email has been sent to you."
+                    + " Follow the link in the email to confirm your registration.";
         }
         else {
-            return "Этот email уже используется. Введите корректный email."
-                    + " Для отмены команды введите /cancel";
+            return "This email is already in use. Please enter a valid email."
+                    + " To cancel a command, enter /cancel";
         }
     }
     private ResponseEntity<String> sendRequestToMailService(String cryptoUserId, String email) {
-        //отправка HTTP POST запроса к сервису почтовых рассылок
         var restTemplate = new RestTemplate();
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -84,6 +83,6 @@ public class AppUserServiceImpl implements AppUserService {
                 .emailTo(email)
                 .build();
         var request = new HttpEntity<>(mailParams, headers);
-        return restTemplate.exchange(mailServiceUri, HttpMethod.POST, request, String.class);//TODO возм. ощибка в mailServiceUri
+        return restTemplate.exchange(mailServiceUri, HttpMethod.POST, request, String.class);//TODO check mailServiceUri
     }
 }

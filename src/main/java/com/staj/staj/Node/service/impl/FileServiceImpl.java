@@ -35,7 +35,7 @@ public class FileServiceImpl implements FileService {
     @Value("${service.file_storage.uri}")
     private String fileStorageUri;
     @Value("${link.address}")
-    private String linkAddress;
+    public String linkAddress;
     private final AppDocumentDAO appDocumentDAO;
     private final BinaryContentDAO binaryContentDAO;
     private final AppPhotoDAO appPhotoDAO;//bean для сохранения объекта фото в базу

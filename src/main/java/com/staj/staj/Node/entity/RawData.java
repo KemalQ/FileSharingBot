@@ -16,15 +16,17 @@ import javax.persistence.Table;
 import java.util.Objects;
 
 //@Data
+//возможен не правильный импорт
+//исключение для id, при генерации G&S значение id учитываться не будут
 @Setter
 @Getter
-@EqualsAndHashCode(exclude = "id")//исключение для id, при генерации G&S значение id учитываться не будут
+@EqualsAndHashCode(exclude = "id")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "raw_data")//возможен не правильный импорт
-@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)//возможен не правильный импорт
+@Table(name = "raw_data")
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class RawData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -12,12 +12,10 @@ import static com.staj.staj.module.RabbitQueue.*;
 
 @Component
 @Slf4j
-public class UpdateProcessor {//для разных типов сообщений буду
-    // передавать разный набор входящих параметров в этот сервис
-    private TelegramBot telegramBot;//соединение UpdateController с TelegramBot
+public class UpdateProcessor {
+    private TelegramBot telegramBot;//UpdateController TelegramBot ile bağlantısı
     private final MessageUtils messageUtils;
     private  UpdateProducer updateProducer;
-
     public UpdateProcessor(MessageUtils messageUtils, UpdateProducer updateProducer) {
         this.updateProducer = updateProducer;
         this.messageUtils = messageUtils;
@@ -72,6 +70,4 @@ public class UpdateProcessor {//для разных типов сообщени�
     private void processTextMessage(Update update) {
         updateProducer.produce(TEXT_MESSAGE_UPDATE, update);
     }
-
-
 }

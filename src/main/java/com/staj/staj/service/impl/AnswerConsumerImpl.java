@@ -11,12 +11,9 @@ import static com.staj.staj.module.RabbitQueue.ANSWER_MESSAGE;
 @Service
 public class AnswerConsumerImpl implements AnswerConsumer {
     private final UpdateProcessor updateProcessor;
-
     public AnswerConsumerImpl(UpdateProcessor updateProcessor) {
         this.updateProcessor = updateProcessor;
     }
-
-
     @Override
     @RabbitListener(queues = ANSWER_MESSAGE)
     public void consume(SendMessage sendMessage) {

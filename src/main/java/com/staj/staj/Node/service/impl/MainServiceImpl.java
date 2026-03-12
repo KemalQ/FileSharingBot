@@ -31,6 +31,7 @@ public class MainServiceImpl implements MainService {
     private final AppUserDAO appUserDAO;
     private final FileService fileService;
     private final AppUserService appUserService;
+
     public MainServiceImpl(RawDataDAO rawDataDAO, ProducerService producerService, AppUserDAO appUserDAO, FileService fileService, AppUserService appUserService) {
         this.rawDataDAO = rawDataDAO;
         this.producerService = producerService;
@@ -62,7 +63,6 @@ public class MainServiceImpl implements MainService {
             log.error("Unknown user state: " + userState);
             output = "Unknown error! Enter /cancel and try again!";
         }
-
         var chatId = update.getMessage().getChatId();
         sendAnswer(output, chatId);
     }
@@ -78,11 +78,11 @@ public class MainServiceImpl implements MainService {
         try{
             AppDocument doc = fileService.processDoc(update.getMessage());
             String link = fileService.generateLink(doc.getId(), LinkType.GET_DOC);//Добавил генерацию ссылки для скачивания документа
-            var answer = "Документ успешно загружен! ссылка для скачивания: " + link;
+            var answer = "Document successfully uploaded! Download link: " + link;
             sendAnswer(answer, chatId);
         } catch (UploadFileException ex) {
-            log.error("Ошибка при загрузке файла", ex);
-            String error = "К сожалению, загрузка файла не удалась. Повторите попытку позже.";
+            log.error("Error loading file", ex);
+            String error = "Sorry, file upload failed. Please try again later.";
             sendAnswer(error, chatId);
         }
     }
@@ -90,12 +90,12 @@ public class MainServiceImpl implements MainService {
     private boolean isNotAllowToSendContent(Long chatId, AppUser appUser) {
         var userState = appUser.getState();
         if (!appUser.getIsActive()) {
-            var error = "Зарегистрируйтесь или активируйте " +
-                    "свою учетную запись для загрузки контента";
+            var error = "Register or activate " +
+                    "your account to download content";
             sendAnswer(error, chatId);
             return true;
         } else if (!BASIC_STATE.equals(userState)){
-            var error = "Отмените текущую команду с помощью /cancel для отправки файлов";
+            var error = "Cancel the current command with /cancel to send files";
             sendAnswer(error, chatId);
             return true;
         }
@@ -113,12 +113,12 @@ public class MainServiceImpl implements MainService {
         try{//передал message из вход. Update в fileService
             AppPhoto photo = fileService.processPhoto(update.getMessage());
             String link = fileService.generateLink(photo.getId(), LinkType.GET_PHOTO);//Добавил генерацию ссылки для скачивания фото
-            var answer = "Фото успешно загружено! " +
-                    "Ссылка для скачивания: " + link;
+            var answer = "Photo uploaded successfully! " +
+                    "Download link: " + link;
             sendAnswer(answer, chatId);
         } catch (UploadFileException ex) {
-            log.error("Ошибка при загрузке фото", ex);
-            String error = "К сожалению, загрузка фото не удалась. Повторите попытку позже.";
+            log.error("Error uploading photo", ex);
+            String error = "Sorry, photo upload failed. Please try again later.";
             sendAnswer(error, chatId);
         }
     }
@@ -154,7 +154,8 @@ public class MainServiceImpl implements MainService {
         producerService.producerAnswer(sendMessage);
     }
 
-    private AppUser findOrSaveAppUser(Update update){//поиск пользователя в бд, имеет PrimaryKey и связан с сессией Hibernate
+    //private
+    public AppUser findOrSaveAppUser(Update update){//veritabanında kullanıcıyı arıyor, PrimaryKey'e sahip ve Hibernate oturumuyla ilişkili
         User telegramUser = update.getMessage().getFrom();
         var optional = appUserDAO.findByTelegramUserId(telegramUser.getId());
         if(optional.isEmpty()){//если пользователя нет- сохраняем его
@@ -163,7 +164,7 @@ public class MainServiceImpl implements MainService {
                     .userName(telegramUser.getUserName())
                     .firstName(telegramUser.getFirstName())
                     .lastName(telegramUser.getLastName())
-                    //TODO изменить значение по умолчанию после добавления регистрации
+                    //TODO change default value after adding registration
                     .isActive(false)
                     .state(BASIC_STATE).build();
             return appUserDAO.save(transientAppUser);
@@ -171,7 +172,7 @@ public class MainServiceImpl implements MainService {
         return optional.get();
     }
     private void saveRawData(Update update) {//storing to hash collection
-        RawData rawData = RawData.builder().event(update).build();//из за неправильного импорта в RawData .event не распознается
+        RawData rawData = RawData.builder().event(update).build();
         rawDataDAO.save(rawData);//storing to DB and setting id
     }
 }

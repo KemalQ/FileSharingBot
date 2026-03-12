@@ -10,7 +10,10 @@ public enum ServiceCommand {
     ServiceCommand(String value){
         this.value = value;
     }
-
+    @Override
+    public String toString() {
+        return value;
+    }
     public static ServiceCommand fromValue(String v) {
         for (ServiceCommand c: ServiceCommand.values()){
             if (c.value.equals(v)){
@@ -18,10 +21,5 @@ public enum ServiceCommand {
             }
         }
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return value;
     }
 }

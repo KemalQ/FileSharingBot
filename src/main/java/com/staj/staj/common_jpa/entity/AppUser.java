@@ -9,17 +9,17 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
-@EqualsAndHashCode(exclude = "id")//исключение для id, при генерации G&S значение id учитываться не будут
+@EqualsAndHashCode(exclude = "id")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "app_user")//возможен не правильный импорт
+@Table(name = "app_user")
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long telegramUserId;//id пользователя в самом телеграмме
+    private Long telegramUserId;//kullanıcının Tg id'si
     @CreationTimestamp
     private LocalDateTime firstLoginDate;
     private String firstName;

@@ -23,13 +23,15 @@ public class TelegramBot extends TelegramWebhookBot {
     @Value("${bot.uri}")
     private String botUri;
     private final UpdateProcessor updateProcessor;
-    public TelegramBot(UpdateProcessor updateProcessor){
+
+    public TelegramBot(UpdateProcessor updateProcessor) {
         this.updateProcessor = updateProcessor;
     }
+
     @PostConstruct
-    public void init(){
+    public void init() {
         updateProcessor.registerBot(this);
-        try{
+        try {
             var setWebhook = SetWebhook.builder().url(botUri).build();
             this.setWebhook(setWebhook);
         } catch (TelegramApiException e) {
@@ -41,23 +43,25 @@ public class TelegramBot extends TelegramWebhookBot {
     public String getBotUsername() {
         return userName;
     }
+
     @Override
-    public String getBotToken(){
+    public String getBotToken() {
         return tokenBot;
     }
+
     @Override
     public String getBotPath() {
         return "/update";
     }
 
     public void sendAnswerMessage(SendMessage message) {
-//        if (message != null) {
-//            try{
-//                execute(message);
-//            } catch (TelegramApiException e){
-//                log.error(String.valueOf(e));
-//            }
-//        }
+        if (message != null) {
+            try{
+                execute(message);
+            } catch (TelegramApiException e){
+                log.error(String.valueOf(e));
+            }
+        }
     }
 
     @Override

@@ -10,11 +10,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Slf4j
 public class UpdateProducerImpl implements UpdateProducer {
     private final RabbitTemplate rabbitTemplate;
-
     public UpdateProducerImpl(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
-
     @Override
     public void produce(String rabbitQueue, Update update) {
         log.debug(update.getMessage().getText());
